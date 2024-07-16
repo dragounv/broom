@@ -1,9 +1,10 @@
 import sys
+import json
 
-from config import Config
-from directory_record import DirRecord
+from directory_record import DirRecord, DirRecordEncoder
 
 
+MIN_ARGS: int = 2
 USAGE: str = "python3 main.py [dir_to_analyze]"
 
 
@@ -13,16 +14,21 @@ def main() -> None:
         print(USAGE, file=sys.stderr)
         sys.exit(1)
     else:
-        config = Config(sys.argv)
+        config = {
+            "work_dir": sys.argv[1]
+        }
         run(config)
         sys.exit(0)
 
 
 def not_enough_args() -> bool:
-    return len(sys.argv) < Config.MIN_ARGS
+    return len(sys.argv) < MIN_ARGS
 
-def run(config: Config) -> None:
-    root_dir = DirRecord(config.work_dir)
+
+def run(config: dict) -> None:
+    root_record = DirRecord(config["work_dir"])
+    root_record.scan()
+    sys.stdout.write(DirRecordEncoder().encode(root_record))
 
 if __name__ == "__main__":
     main()
