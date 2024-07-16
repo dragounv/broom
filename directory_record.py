@@ -3,7 +3,7 @@ import json
 from typing import Any
 
 
-class DirRecord():
+class DirRecord:
     """Holds information about archive directory, and can be serialized as JSON"""
 
     def __init__(self, path: str) -> None:
@@ -33,6 +33,22 @@ class DirRecord():
             self.has_open_warcs = True
             return True
         return False
+    
+    def totals(self) -> dict[str, Any]:
+        total_values: dict[str, Any] = {
+            "total_files": 0,
+            "total_size": 0,
+        }
+        return self._get_totals(total_values)
+
+    def _get_totals(self, total_values: dict[str, Any]) -> dict[str, Any]:
+        total_values["total_files"] += self.no_archive_files
+        total_values["total_size"] += self.size_of_archive_files
+        for dir_record in self.directories:
+            total_values = dir_record._get_totals(total_values)
+        return total_values
+
+
 
 class DirRecordEncoder(json.JSONEncoder):
     def default(self, o: Any) -> Any:

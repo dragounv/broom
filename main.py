@@ -29,6 +29,7 @@ def run(config: dict) -> None:
     root_record = DirRecord(config["work_dir"])
     root_record.scan()
     sys.stdout.write(DirRecordEncoder().encode(root_record))
+    # json.dump(root_record.totals(), sys.stdout)
 
 if __name__ == "__main__":
     main()
